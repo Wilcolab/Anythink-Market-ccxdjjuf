@@ -83,28 +83,97 @@ describe('Arithmetic', function () {
                     done();
                 });
         });
-        it('adds with negative exponent', function (done) {
-            request.get('/arithmetic?operation=add&operand1=1.2e-5&operand2=-1.2e-5')
-                .expect(200)
-                .end(function (err, res) {
-                    expect(res.body).to.eql({ result: 0 });
-                    done();
-                });
-        });
-    });
+        // Additional tests to append to /test/arithmetic.test.js
 
-// TODO: Challenge #1
- 
-
-    describe('Multiplication', function () {
-        it('multiplies two positive integers', function (done) {
-            request.get('/arithmetic?operation=multiply&operand1=21&operand2=2')
-                .expect(200)
-                .end(function (err, res) {
-                    expect(res.body).to.eql({ result: 42 });
-                    done();
-                });
+        describe('Subtraction', function () {
+            it('subtracts two positive integers', function (done) {
+                request.get('/arithmetic?operation=subtract&operand1=42&operand2=21')
+                    .expect(200)
+                    .end(function (err, res) {
+                        expect(res.body).to.eql({ result: 21 });
+                        done();
+                    });
+            });
+            it('subtracts a larger integer from a smaller integer', function (done) {
+                request.get('/arithmetic?operation=subtract&operand1=21&operand2=42')
+                    .expect(200)
+                    .end(function (err, res) {
+                        expect(res.body).to.eql({ result: -21 });
+                        done();
+                    });
+            });
+            it('subtracts with floating point numbers', function (done) {
+                request.get('/arithmetic?operation=subtract&operand1=2.5&operand2=5')
+                    .expect(200)
+                    .end(function (err, res) {
+                        expect(res.body).to.eql({ result: -2.5 });
+                        done();
+                    });
+            });
+            it('subtracts supporting exponential notation', function (done) {
+                request.get('/arithmetic?operation=subtract&operand1=4.2e1&operand2=0')
+                    .expect(200)
+                    .end(function (err, res) {
+                        expect(res.body).to.eql({ result: 42 });
+                        done();
+                    });
+            });
         });
+
+        describe('Validation (operand2)', function () {
+            it('rejects missing operand2', function (done) {
+                request.get('/arithmetic?operation=add&operand1=21')
+                    .expect(400)
+                    .end(function (err, res) {
+                        expect(res.body).to.eql({ error: "Invalid operand2: undefined" });
+                        done();
+                    });
+            });
+            it('rejects operand2 with invalid sign', function (done) {
+                request.get('/arithmetic?operation=add&operand1=4&operand2=4.2-1')
+                    .expect(400)
+                    .end(function (err, res) {
+                        expect(res.body).to.eql({ error: "Invalid operand2: 4.2-1" });
+                        done();
+                    });
+            });
+            it('rejects operand2 with invalid decimals', function (done) {
+                request.get('/arithmetic?operation=add&operand1=4&operand2=4.2.1')
+                    .expect(400)
+                    .end(function (err, res) {
+                        expect(res.body).to.eql({ error: "Invalid operand2: 4.2.1" });
+                        done();
+                    });
+            });
+            it('rejects NaN as operand1', function (done) {
+                request.get('/arithmetic?operation=add&operand1=NaN&operand2=1')
+                    .expect(400)
+                    .end(function (err, res) {
+                        expect(res.body).to.eql({ error: "Invalid operand1: NaN" });
+                        done();
+                    });
+            });
+        });
+
+        describe('Addition (extra)', function () {
+            it('adds numbers with leading plus sign', function (done) {
+                request.get('/arithmetic?operation=add&operand1=+21&operand2=21')
+                    .expect(200)
+                    .end(function (err, res) {
+                        expect(res.body).to.eql({ result: 42 });
+                        done();
+                    });
+            });
+            it('adds numbers using positive exponents', function (done) {
+                request.get('/arithmetic?operation=add&operand1=1e3&operand2=2e3')
+                    .expect(200)
+                    .end(function (err, res) {
+                        expect(res.body).to.eql({ result: 3000 });
+                        done();
+                    });
+            });
+        });
+
         it('multiplies a positive integer with zero', function (done) {
             request.get('/arithmetic?operation=multiply&operand1=21&operand2=0')
                 .expect(200)
@@ -145,6 +214,7 @@ describe('Arithmetic', function () {
                     done();
                 });
         });
+    
     });
 
     describe('Division', function () {
@@ -205,4 +275,4 @@ describe('Arithmetic', function () {
                 });
         });
     });
-});
+    });

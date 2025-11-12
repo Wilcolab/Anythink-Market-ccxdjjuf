@@ -30,17 +30,23 @@ exports.calculate = function(req, res) {
     throw new Error("Invalid operation: " + req.query.operation);
   }
 
-  if (!req.query.operand1 ||
-      !req.query.operand1.match(/^(-)?[0-9\.]+(e(-)?[0-9]+)?$/) ||
-      req.query.operand1.replace(/[-0-9e]/g, '').length > 1) {
-    throw new Error("Invalid operand1: " + req.query.operand1);
+  var rawOperand1 = req.query.operand1;
+  var rawOperand2 = req.query.operand2;
+
+  var operand1 = (rawOperand1 === undefined) ? rawOperand1 : String(rawOperand1).trim();
+  var operand2 = (rawOperand2 === undefined) ? rawOperand2 : String(rawOperand2).trim();
+
+  if (!operand1 ||
+      !operand1.match(/^([+-])?[0-9\.]+(e([+-])?[0-9]+)?$/i) ||
+      operand1.replace(/[-0-9e]/ig, '').length > 1) {
+    throw new Error("Invalid operand1: " + rawOperand1);
   }
 
-  if (!req.query.operand2 ||
-      !req.query.operand2.match(/^(-)?[0-9\.]+(e(-)?[0-9]+)?$/) ||
-      req.query.operand2.replace(/[-0-9e]/g, '').length > 1) {
-    throw new Error("Invalid operand2: " + req.query.operand2);
+  if (!operand2 ||
+      !operand2.match(/^([+-])?[0-9\.]+(e([+-])?[0-9]+)?$/i) ||
+      operand2.replace(/[-0-9e]/ig, '').length > 1) {
+    throw new Error("Invalid operand2: " + rawOperand2);
   }
 
-  res.json({ result: operation(req.query.operand1, req.query.operand2) });
+  res.json({ result: operation(operand1, operand2) });
 };
