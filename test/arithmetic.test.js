@@ -92,7 +92,7 @@ describe('Arithmetic', function () {
                 });
         });
     });
-
+//tests for exponentiation
 describe('Exponentiation', function () {
     it('raises a positive integer to a positive power', function (done) {
         request.get('/arithmetic?operation=exponentiate&operand1=2&operand2=3')
@@ -152,7 +152,7 @@ describe('Exponentiation', function () {
     });
 });
 
- 
+ //tests for multiplication and division
 
     describe('Multiplication', function () {
         it('multiplies two positive integers', function (done) {
